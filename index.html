@@ -4,74 +4,74 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#0A5C3D" />
-<title>Selltia — test de color (mock)</title>
+<title>Borrador de diseño</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
   /* ─────────────────────────────────────────────────────────────
-     MOCK DE TEST DE COLOR — Selltia
-     Una sola pantalla (conversación del agente IA vendiendo) replicada
-     en 3 direcciones de color. SOLO cambian las variables de color por
-     tema → experimento controlado (idéntico salvo la paleta).
-     Direcciones:  1 = "verde que vende"  ·  2 = "teal confianza"
-                   3 = "índigo tech" (la convención que el research cuestiona)
+     PROBE DE COLOR — Selltia  (recortado para customer dev)
+     Instrumento de medición de color, NO demo de producto. Por eso:
+       · sin "win" (nada de "Pedido creado / Venta cerrada")
+       · una sola interacción (pregunta del cliente → respuesta de la IA → ficha)
+       · sin emojis (render inconsistente entre sistemas; contamina la lectura)
+       · lienzo deliberadamente "borrador"
+     Dos ejes, NO cruzados:
+       · COLOR  → selector 1·2·3 visible (verde / teal / índigo). Única variable a juzgar.
+       · VERTICAL → fijo por entrevistada vía ?v= (oculto). NO se cruza con color
+                    para no romper el aislamiento de la variable.
+         ?v=shalu  → Shalú Artesanal (Shadia) · velas — Persona A
+         ?v=olumi  → Olumi (Juanita) · regalo/autocuidado — Persona A
+         ?v=eka    → EKA SOMOS (Dani) · agendar clase — Persona B (otro JTBD)
      ───────────────────────────────────────────────────────────── */
 
   /* Capa semántica neutra (no cambia con el tema) */
   :root {
     --font: "Hanken Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --radius-sm: 8px;
     --radius-md: 14px;
-    --radius-lg: 20px;
     --radius-bubble: 20px;
     --space-1: 4px;  --space-2: 8px;  --space-3: 12px;
     --space-4: 16px; --space-5: 20px; --space-6: 24px;
     --shadow-1: 0 1px 2px rgba(20,30,25,.06), 0 1px 1px rgba(20,30,25,.04);
-    --shadow-2: 0 6px 20px rgba(20,30,25,.10), 0 1px 2px rgba(20,30,25,.05);
-    --dur-fast: 160ms; --dur-base: 240ms;
+    --dur-base: 240ms;
     --ease-out: cubic-bezier(.2,.8,.2,1);
-    --ease-spring: cubic-bezier(.2,1.3,.4,1);
   }
 
   /* ── Dirección 1 — VERDE QUE VENDE (cálido) ── */
   [data-theme="1"] {
-    --bg-base:#FAF6EF; --bg-surface:#FFFFFF; --bg-elevated:#FFFFFF;
+    --bg-base:#FAF6EF; --bg-surface:#FFFFFF;
     --text-primary:#1B2A22; --text-secondary:#5C6C63; --text-inverse:#FFFFFF;
     --brand:#0F7A52; --brand-strong:#0A5C3D;
     --action:#0F7A52; --action-text:#FFFFFF;
-    --accent:#E8743B;            /* coral cálido: venta / celebración */
-    --accent-soft:#FCEadf;
     --agent-bubble-bg:#D7EFE2; --agent-bubble-text:#15281F;
     --client-bubble-bg:#EEF0EC; --client-bubble-text:#23302A;
     --border-subtle:#E7E2D8;
     --header-bg:#0A5C3D; --header-text:#FFFFFF;
+    --live:#2BC48A;              /* indicador "respondiendo", tokenizado por tema */
   }
   /* ── Dirección 2 — TEAL CONFIANZA ── */
   [data-theme="2"] {
-    --bg-base:#F2F6F6; --bg-surface:#FFFFFF; --bg-elevated:#FFFFFF;
+    --bg-base:#F2F6F6; --bg-surface:#FFFFFF;
     --text-primary:#13242A; --text-secondary:#506870; --text-inverse:#FFFFFF;
     --brand:#0E6E7C; --brand-strong:#0A4E58;
     --action:#0E6E7C; --action-text:#FFFFFF;
-    --accent:#F2792B;            /* naranja cálido: venta / celebración */
-    --accent-soft:#FCE7D6;
     --agent-bubble-bg:#D2EAEE; --agent-bubble-text:#11272C;
     --client-bubble-bg:#EAEEEF; --client-bubble-text:#1E2D31;
     --border-subtle:#DBE5E5;
     --header-bg:#0A4E58; --header-text:#FFFFFF;
+    --live:#19B6BE;
   }
   /* ── Dirección 3 — ÍNDIGO TECH (la convención a presionar) ── */
   [data-theme="3"] {
-    --bg-base:#F4F5FA; --bg-surface:#FFFFFF; --bg-elevated:#FFFFFF;
+    --bg-base:#F4F5FA; --bg-surface:#FFFFFF;
     --text-primary:#1A1F36; --text-secondary:#565E7A; --text-inverse:#FFFFFF;
     --brand:#3B4DD0; --brand-strong:#2A38A8;
     --action:#3B4DD0; --action-text:#FFFFFF;
-    --accent:#7C5CFC;            /* violeta: el "AI accent" convencional */
-    --accent-soft:#ECE8FE;
     --agent-bubble-bg:#E2E5FB; --agent-bubble-text:#1A1F36;
     --client-bubble-bg:#ECEEF3; --client-bubble-text:#252B40;
     --border-subtle:#E2E4ED;
     --header-bg:#2A38A8; --header-text:#FFFFFF;
+    --live:#6E7BF2;
   }
 
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -93,11 +93,11 @@
     transition: background var(--dur-base) var(--ease-out);
   }
   @media (min-width:480px){
-    .phone{ margin:18px 0; height:min(900px,92svh); flex:none;
+    .phone{ margin:18px 0; height:min(820px,92svh); flex:none;
       border-radius:34px; box-shadow:0 30px 80px rgba(0,0,0,.45); border:1px solid #111; }
   }
 
-  /* Header — AgentStatusBar */
+  /* Header — barra de estado del agente (señal de "cabina", no de chat propio) */
   .hdr {
     background: var(--header-bg); color: var(--header-text);
     padding: calc(env(safe-area-inset-top) + 12px) var(--space-4) 12px;
@@ -107,13 +107,14 @@
   .avatar{
     width:40px;height:40px;border-radius:50%;flex:none;
     background: rgba(255,255,255,.18);
-    display:grid;place-items:center;font-size:20px;font-weight:600;
+    display:grid;place-items:center;font-size:16px;font-weight:700;letter-spacing:.5px;
   }
   .hdr .who{ flex:1; min-width:0; }
   .hdr .name{ font-weight:600; font-size:15px; line-height:1.2; }
-  .hdr .status{ font-size:12px; opacity:.85; display:flex; align-items:center; gap:5px; margin-top:2px; }
-  .dot{ width:7px;height:7px;border-radius:50%;background:#46E08B; box-shadow:0 0 0 0 rgba(70,224,139,.6); animation:pulse 2.4s infinite; }
-  @keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(70,224,139,.5)} 70%{box-shadow:0 0 0 7px rgba(70,224,139,0)} 100%{box-shadow:0 0 0 0 rgba(70,224,139,0)} }
+  .hdr .status{ font-size:12px; opacity:.9; display:flex; align-items:center; gap:5px; margin-top:2px; }
+  .dot{ width:7px;height:7px;border-radius:50%;background:var(--live);
+    box-shadow:0 0 0 0 rgba(255,255,255,.0); animation:pulse 2.4s infinite; }
+  @keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(255,255,255,.35)} 70%{box-shadow:0 0 0 7px rgba(255,255,255,0)} 100%{box-shadow:0 0 0 0 rgba(255,255,255,0)} }
   .pause{
     border:1px solid rgba(255,255,255,.35); color:var(--header-text);
     background:transparent; font-family:inherit; font-size:12px; font-weight:600;
@@ -129,73 +130,47 @@
   .row.in{ justify-content:flex-start; }
   .row.out{ justify-content:flex-end; }
   .bubble{
-    max-width:78%; padding:10px 13px; font-size:14.5px; line-height:1.42;
+    max-width:80%; padding:10px 13px; font-size:14.5px; line-height:1.42;
     border-radius:var(--radius-bubble); animation:rise var(--dur-base) var(--ease-out) both;
   }
   .in .bubble{ background:var(--client-bubble-bg); color:var(--client-bubble-text); border-bottom-left-radius:7px; }
   .out .bubble{ background:var(--agent-bubble-bg); color:var(--agent-bubble-text); border-bottom-right-radius:7px;
     transition:background var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out); }
-  .meta{ font-size:10.5px; opacity:.6; margin-top:4px; display:block; }
-  .out .tag{ font-weight:600; opacity:.9; }
+  .meta{ font-size:10.5px; opacity:.65; margin-top:4px; display:block; }
+  .out .tag{ font-weight:600; }
   @keyframes rise{ from{ opacity:0; transform:translateY(8px) } to{ opacity:1; transform:none } }
 
-  /* Tarjeta de producto (consultada del catálogo) */
+  /* Ficha consultada del catálogo / agenda (contexto de "app de negocio") */
   .card{
-    max-width:80%; background:var(--bg-surface); border:1px solid var(--border-subtle);
+    max-width:82%; background:var(--bg-surface); border:1px solid var(--border-subtle);
     border-radius:var(--radius-md); overflow:hidden; box-shadow:var(--shadow-1);
     align-self:flex-end; animation:rise var(--dur-base) var(--ease-out) both;
   }
-  .card .photo{ height:118px; background:
-    radial-gradient(120% 100% at 30% 10%, #F3E7D2 0%, #E9D8Bd 60%, #E0C9A8 100%);
-    display:grid; place-items:center; font-size:46px; }
+  .card .photo{ height:118px; position:relative;
+    background:radial-gradient(120% 100% at 30% 10%, var(--bg-base) 0%, var(--border-subtle) 130%);
+    display:grid; place-items:center; }
+  .card .photo svg{ width:46px;height:46px; color:var(--text-secondary); opacity:.45; }
   .card .body{ padding:11px 13px; }
   .card .pname{ font-weight:600; font-size:14.5px; }
   .card .price{ font-variant-numeric: tabular-nums; font-weight:700; font-size:17px; color:var(--brand-strong); margin-top:3px;
     transition:color var(--dur-base) var(--ease-out); }
-  .card .src{ font-size:11px; color:var(--text-secondary); margin-top:6px; display:flex; align-items:center; gap:5px; }
-  .src svg{ width:13px;height:13px; }
+  .card .sub{ font-size:12px; color:var(--text-secondary); margin-top:2px; }
+  .card .src{ font-size:11px; color:var(--text-secondary); margin-top:7px; display:flex; align-items:center; gap:5px; }
+  .src svg{ width:13px;height:13px; flex:none; }
 
-  /* Indicador de escribiendo */
-  .typing .bubble{ display:flex; gap:5px; padding:14px 15px; align-items:center; }
-  .typing span{ width:7px;height:7px;border-radius:50%;background:var(--text-secondary);opacity:.5;animation:blink 1.3s infinite; }
-  .typing span:nth-child(2){ animation-delay:.18s } .typing span:nth-child(3){ animation-delay:.36s }
-  @keyframes blink{ 0%,60%,100%{opacity:.28;transform:translateY(0)} 30%{opacity:.9;transform:translateY(-3px)} }
-
-  /* Tarjeta de "pedido creado" — el win / celebración */
-  .order{
-    align-self:center; width:92%; background:var(--bg-surface);
-    border:1px solid var(--border-subtle); border-radius:var(--radius-md);
-    padding:14px; box-shadow:var(--shadow-2); margin-top:2px;
-    animation:pop var(--dur-base) var(--ease-spring) both;
-  }
-  @keyframes pop{ from{opacity:0;transform:scale(.94)} to{opacity:1;transform:none} }
-  .order .top{ display:flex; align-items:center; gap:9px; }
-  .check{ width:26px;height:26px;border-radius:50%;background:var(--accent);
-    display:grid;place-items:center;flex:none;
-    transition:background var(--dur-base) var(--ease-out); }
-  .check svg{ width:15px;height:15px;color:#fff; }
-  .order .ttl{ font-weight:700; font-size:14.5px; }
-  .order .badge{ margin-left:auto; font-size:11px; font-weight:600; color:var(--accent);
-    background:var(--accent-soft); padding:4px 9px; border-radius:999px;
-    transition:color var(--dur-base) var(--ease-out), background var(--dur-base) var(--ease-out); }
-  .order .lines{ margin-top:11px; border-top:1px solid var(--border-subtle); padding-top:10px; font-size:13px; }
-  .order .ln{ display:flex; justify-content:space-between; padding:3px 0; color:var(--text-secondary); }
-  .order .ln.total{ color:var(--text-primary); font-weight:700; font-size:15px; margin-top:4px;
-    font-variant-numeric:tabular-nums; }
-
-  /* Composer */
+  /* Composer atenuado — el dueño observa; la IA responde sola */
   .composer{
     display:flex; gap:var(--space-2); align-items:center;
     padding:10px var(--space-3) calc(env(safe-area-inset-bottom) + 12px);
     background:var(--bg-surface); border-top:1px solid var(--border-subtle);
   }
   .composer .field{ flex:1; background:var(--bg-base); border:1px solid var(--border-subtle);
-    border-radius:999px; padding:11px 15px; color:var(--text-secondary); font-size:14px; }
+    border-radius:999px; padding:11px 15px; color:var(--text-secondary); font-size:13.5px; }
   .send{ width:42px;height:42px;border-radius:50%;border:none;background:var(--action);
     display:grid;place-items:center;flex:none; transition:background var(--dur-base) var(--ease-out); }
   .send svg{ width:19px;height:19px;color:var(--action-text); }
 
-  /* Selector de dirección (etiquetas NEUTRAS para no sesgar la entrevista) */
+  /* Selector de color (etiquetas NEUTRAS 1·2·3 para no sesgar la entrevista) */
   .switch{
     position:fixed; bottom:calc(env(safe-area-inset-bottom) + 10px); left:50%; transform:translateX(-50%);
     display:flex; gap:6px; background:rgba(20,20,20,.82); backdrop-filter:blur(8px);
@@ -209,72 +184,29 @@
 
   @media (prefers-reduced-motion: reduce){
     *{ animation:none !important; transition:none !important; }
-    .dot{ animation:none !important; }
   }
 </style>
 </head>
 <body>
   <div class="phone" data-theme="1" id="phone">
-    <!-- Header / estado del agente -->
     <header class="hdr">
-      <div class="avatar">🌿</div>
+      <div class="avatar" id="avatar">S</div>
       <div class="who">
-        <div class="name">Camila · cliente nueva</div>
+        <div class="name" id="cname">Camila · cliente nueva</div>
         <div class="status"><span class="dot"></span>Tu vendedor IA está respondiendo</div>
       </div>
       <button class="pause">Tomar control</button>
     </header>
 
-    <!-- Conversación -->
-    <main class="thread" id="thread">
-      <div class="row in"><div class="bubble">¡Hola! 🌿 Vi en su insta la vela de lavanda artesanal, ¿todavía tienen? <span class="meta">10:42</span></div></div>
+    <main class="thread" id="thread"><!-- render dinámico según ?v= --></main>
 
-      <div class="row out"><div class="bubble">¡Hola, Camila! 💛 Sí, la <b>Vela de Lavanda</b> está disponible. Está hecha a mano con cera de soya y aroma natural — dura ~40 h.<span class="meta"><span class="tag">Tu IA</span> · 10:42</span></div></div>
-
-      <div class="card">
-        <div class="photo">🕯️</div>
-        <div class="body">
-          <div class="pname">Vela de Lavanda · artesanal</div>
-          <div class="price">$&thinsp;38.000</div>
-          <div class="src">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
-            Precio tomado de tu catálogo
-          </div>
-        </div>
-      </div>
-
-      <div class="row in"><div class="bubble">Perfecto, quiero 2 🙌 ¿hacen envío a Medellín?<span class="meta">10:43</span></div></div>
-
-      <div class="row out"><div class="bubble">¡Claro! Envío a Medellín: <b>$8.000</b>, llega en 2–3 días. ¿Te confirmo el pedido de 2 velas? <span class="meta"><span class="tag">Tu IA</span> · 10:43</span></div></div>
-
-      <div class="row in"><div class="bubble">Sí porfa 💜<span class="meta">10:44</span></div></div>
-
-      <div class="row typing" aria-label="escribiendo"><div class="bubble"><span></span><span></span><span></span></div></div>
-
-      <!-- El win -->
-      <div class="order">
-        <div class="top">
-          <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
-          <div class="ttl">Pedido creado</div>
-          <div class="badge">Venta cerrada</div>
-        </div>
-        <div class="lines">
-          <div class="ln"><span>Vela de Lavanda × 2</span><span style="font-variant-numeric:tabular-nums">$&thinsp;76.000</span></div>
-          <div class="ln"><span>Envío · Medellín</span><span style="font-variant-numeric:tabular-nums">$&thinsp;8.000</span></div>
-          <div class="ln total"><span>Total</span><span>$&thinsp;84.000</span></div>
-        </div>
-      </div>
-    </main>
-
-    <!-- Composer -->
     <div class="composer">
-      <div class="field">Escribe un mensaje…</div>
+      <div class="field">La IA responde sola · escribe para intervenir</div>
       <button class="send" aria-label="enviar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 11l18-8-8 18-2-7-8-3z"/></svg></button>
     </div>
   </div>
 
-  <!-- Selector neutro 1·2·3 (no nombrar colores en la entrevista) -->
-  <div class="hint" id="hint">Toca para cambiar de versión · muestra una a la vez</div>
+  <div class="hint" id="hint">Toca 1 · 2 · 3 para cambiar de versión</div>
   <nav class="switch" role="group" aria-label="Versión de color">
     <button data-set="1" aria-pressed="true">1</button>
     <button data-set="2" aria-pressed="false">2</button>
@@ -282,6 +214,52 @@
   </nav>
 
   <script>
+    // Íconos de ficha (SVG inline — render idéntico en todo sistema, sin emojis)
+    const ICONS = {
+      candle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5c1.6 1.8 2.4 3 2.4 4.2a2.4 2.4 0 0 1-4.8 0c0-1.2.8-2.4 2.4-4.2z"/><rect x="8.5" y="9.5" width="7" height="11" rx="1.4"/><path d="M12 9.5v-1"/></svg>',
+      gift:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="9" width="17" height="4" rx="1"/><path d="M5 13v7.5h14V13"/><path d="M12 9v11.5"/><path d="M12 9s-1-4.5-3.5-4.5a2.5 2.5 0 0 0 0 5H12z"/><path d="M12 9s1-4.5 3.5-4.5a2.5 2.5 0 0 1 0 5H12z"/></svg>',
+      calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/></svg>'
+    };
+    const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>';
+
+    // Escenas por vertical (fijo por entrevistada; NO se cruza con color)
+    const SCENES = {
+      shalu: { initial:'S', client:'Camila',
+        q:'¡Hola! Vi en su Instagram la vela de lavanda artesanal. ¿Todavía tienen?',
+        a:'¡Hola, Camila! Sí, la Vela de Lavanda está disponible. Hecha a mano con cera de soya y aroma natural — dura unas 40 horas.',
+        card:{ icon:'candle', name:'Vela de Lavanda · artesanal', price:'$  38.000', src:'Precio tomado de tu catálogo' } },
+      olumi: { initial:'O', client:'Mariana',
+        q:'¡Hola! Quiero un regalo de autocuidado para una amiga. ¿Qué me recomiendan?',
+        a:'¡Hola, Mariana! El Kit Calma es ideal para regalar: manta tejida, vela de soya y té de tila, en caja lista para obsequio.',
+        card:{ icon:'gift', name:'Kit Calma · autocuidado', price:'$  95.000', src:'Precio tomado de tu catálogo' } },
+      eka:   { initial:'E', client:'Laura',
+        q:'¡Hola! Me interesan las clases de yoga. ¿Cómo me inscribo?',
+        a:'¡Hola, Laura! Con gusto. Tenemos Hatha hoy a las 6:00 pm y mañana a las 7:00 am. ¿Te agendo en alguna?',
+        card:{ icon:'calendar', name:'Yoga Hatha · presencial', price:'Hoy · 6:00 pm', sub:'4 cupos disponibles', src:'Horario tomado de tu agenda' } }
+    };
+
+    const params = new URLSearchParams(location.search);
+    const key = SCENES[params.get('v')] ? params.get('v') : 'shalu';
+    const s = SCENES[key];
+
+    document.getElementById('avatar').textContent = s.initial;
+    document.getElementById('cname').textContent = s.client + ' · cliente nueva';
+
+    const c = s.card;
+    document.getElementById('thread').innerHTML = `
+      <div class="row in"><div class="bubble">${s.q}<span class="meta">10:42</span></div></div>
+      <div class="row out"><div class="bubble">${s.a}<span class="meta"><span class="tag">Tu IA</span> · 10:42</span></div></div>
+      <div class="card">
+        <div class="photo">${ICONS[c.icon]}</div>
+        <div class="body">
+          <div class="pname">${c.name}</div>
+          <div class="price">${c.price}</div>
+          ${c.sub ? `<div class="sub">${c.sub}</div>` : ''}
+          <div class="src">${CHECK}${c.src}</div>
+        </div>
+      </div>`;
+
+    // Selector de color
     const phone = document.getElementById('phone');
     const meta  = document.querySelector('meta[name=theme-color]');
     const headerColors = { '1':'#0A5C3D', '2':'#0A4E58', '3':'#2A38A8' };
@@ -294,10 +272,6 @@
           b.setAttribute('aria-pressed', String(b === btn)));
       });
     });
-    // Mantener el scroll abajo para que el "Pedido creado" sea lo visible
-    const thread = document.getElementById('thread');
-    requestAnimationFrame(() => { thread.scrollTop = thread.scrollHeight; });
-    // Ocultar la pista tras unos segundos
     setTimeout(() => { const h=document.getElementById('hint'); if(h) h.style.opacity='0'; }, 4000);
   </script>
 </body>
