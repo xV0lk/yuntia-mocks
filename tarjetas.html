@@ -128,13 +128,14 @@
     <details class="panel" id="howto">
       <summary>Cómo correr este bloque (~7 min, después del color)</summary>
       <div class="inner">
-        <blockquote>«Estas tarjetas son cosas que una herramienta podría hacer por tu
-        negocio. Te las muestro de a una y me dices, honesta: ¿esto lo necesitas ya,
-        estaría bien tenerlo, o no lo usarías? Me ayudas más diciéndome cuáles NO
-        usarías que cuáles suenan bonitas.»</blockquote>
         <ul>
+          <li>El guion de apertura está en la <b>pantalla de inicio</b> — léelo tal cual:
+            tiende el puente desde la fase sin producto y encuadra sin vender.</li>
           <li>Lee la tarjeta <b>en voz alta</b> y deja que ella decida. No expliques de más
             ni defiendas ninguna — si una necesita venderse, eso ya es dato.</li>
+          <li>Si no entiende una tarjeta, aclárala con un <b>ejemplo neutro</b> de su
+            negocio — sin lenguaje de pitch («es un vendedor que vende por ti…») ni
+            «súper» entre tarjetas (lección de la sesión con Juanita).</li>
           <li>Si reacciona espontáneo («¡eso lo necesito YA!», una historia, un suspiro),
             anótalo literal con ★ — vale más que el balde donde caiga.</li>
           <li>Al final el top 3 es <b>forzado</b>: solo tres, aunque le duela. El trade-off
@@ -154,8 +155,10 @@
   // Texto en el lenguaje de ella: beneficio concreto, sin jerga ni venta.
   // El código F# se revela solo en resultados. only: limita por entrevistada.
   const FEATURES = [
-    { id:'F1',  t:'Arranque conversado',
-      d:'Lo configuras contándole de tu negocio por chat o notas de voz, como a un empleado nuevo — sin formularios.' },
+    // F1 reescrita tras Juanita ("No entendí" [s2 03:30]): "lo configuras" no
+    // tenía antecedente y "arranque conversado" es jerga. Ahora en su lenguaje.
+    { id:'F1',  t:'Empiezas contándole tu negocio',
+      d:'Para ponerla a andar no llenas formularios: le cuentas por chat o nota de voz qué vendes, tus precios y cómo atiendes — como a alguien que llega a ayudarte — y queda lista.' },
     { id:'F2',  t:'Catálogo desde lo que ya tienes',
       d:'Le mandas tu lista de precios como la tengas — PDF, foto, Excel o audio — y arma el catálogo solo.' },
     { id:'F3',  t:'Aprende de tus chats viejos',
@@ -209,7 +212,7 @@
       const j = Math.floor(Math.random() * (i + 1));
       [ids[i], ids[j]] = [ids[j], ids[i]];
     }
-    return { order: ids, idx: 0, buckets: {}, top: [], phase: 'triage' };
+    return { order: ids, idx: 0, buckets: {}, top: [], phase: 'intro' };
   }
   function load(){
     try { const s = JSON.parse(localStorage.getItem(storeKey())); if (s && s.order) return s; }
@@ -241,9 +244,39 @@
 
   function render(){
     if (st.phase === 'triage' && st.idx >= st.order.length) st.phase = 'top';
-    if (st.phase === 'triage') renderTriage();
+    if (st.phase === 'intro') renderIntro();
+    else if (st.phase === 'triage') renderTriage();
     else if (st.phase === 'top') renderTop();
     else renderResults();
+  }
+
+  // Puente fase 1 → tarjetas: hasta aquí no se habló de ninguna herramienta.
+  // El guion encuadra la plataforma SIN venderla (una frase de foco, cero
+  // superlativos) y deja claras las tres respuestas válidas.
+  function renderIntro(){
+    count.textContent = '';
+    stage.innerHTML = `
+      <div class="stage">
+        <div class="fcard">
+          <h2 style="font-size:16px">Lee esto antes de la primera tarjeta</h2>
+          <blockquote style="text-align:left">«Hasta aquí solo hablamos de tu
+          negocio — gracias por eso. Ahora sí te cuento en qué andamos: estamos
+          construyendo una plataforma que acompaña a emprendedores como tú en el
+          día a día de vender por WhatsApp e Instagram. La idea es que responder,
+          cobrar y organizar los pedidos no dependa solo de ti.
+          <br/><br/>
+          Te voy a mostrar varias cosas que podría hacer, de a una. Para cada una
+          dime, honesta: ¿<b>la necesitas ya</b>, <b>estaría bien</b> tenerla, o
+          <b>no la usarías</b>? No hay respuesta mala — me ayudas más diciéndome
+          cuáles NO usarías que cuáles suenan bonitas.»</blockquote>
+        </div>
+        <div class="acts">
+          <button class="ya" id="start">Empezar las tarjetas</button>
+        </div>
+      </div>`;
+    document.getElementById('start').addEventListener('click', () => {
+      st.phase = 'triage'; save(); render();
+    });
   }
 
   function renderTriage(){
