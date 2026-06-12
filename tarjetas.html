@@ -181,7 +181,10 @@
       d:'Va guardando solo los datos de cada cliente: qué ha comprado, qué le gusta, cómo contactarlo — sin que tú anotes nada.' },
     { id:'F12', t:'Lee el comprobante de pago',
       d:'Cuando el cliente manda el pantallazo, revisa monto, fecha y banco contra el pedido y te lo deja listo para confirmar.' },
-    { id:'F13', t:'Cobra con tu llave Bre-B',
+    // F13 retirada tras Juanita: "compartir la llave" es el mínimo esperado de
+    // un agente que cobra, no un feature que se sortea. Queda solo:['juanita']
+    // para que su resultado guardado siga renderizando. La reemplaza F17.
+    { id:'F13', t:'Cobra con tu llave Bre-B', only:['juanita'],
       d:'Comparte tu llave o QR con el monto exacto para que te paguen sin comisión, y le pide el comprobante al cliente.' },
     { id:'F14', t:'Responde «¿dónde va mi pedido?»',
       d:'Cuando el cliente pregunta por su pedido, le responde con el estado real sin que te toque a ti.' },
@@ -189,6 +192,11 @@
       d:'Les hace seguimiento a los interesados que no volvieron a escribir, con buen tono y sin ser intenso.' },
     { id:'F16', t:'Arma la cotización por ti', only:['dani','juanita'],
       d:'Hace las preguntas necesarias para cotizar y te deja un borrador de cotización listo para aprobar con un tap.' },
+    // F17 (nueva, sesión Juanita 06-12): el feature de pagos es el PANEL, no el
+    // riel. "Pagos confirmados" = los que ella confirmó — no promete verificación
+    // bancaria que hoy no existe (la promesa falsa fue lo que tumbó a F12 del top).
+    { id:'F17', t:'Tus cobros en un solo lugar', only:['shadia','dani'],
+      d:'Un panel con los comprobantes que faltan por revisar, los pagos ya confirmados y cuánto te ha entrado por cada canal.' },
   ];
 
   const PERSONAS = {
