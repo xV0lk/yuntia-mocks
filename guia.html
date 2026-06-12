@@ -147,7 +147,7 @@
         necesito entender bien cómo es ese día a día de verdad, no en teoría. No te voy a
         mostrar nada ni a pedirte que opines sobre ninguna idea — al revés, necesito que me
         cuentes cómo haces TÚ las cosas hoy, con ejemplos reales. Mientras más crudo y
-        honesto, más me sirve. ¿Te puedo robar 40 minutos?»</blockquote>
+        honesto, más me sirve. ¿Te puedo robar 45 minutos?»</blockquote>
         <blockquote>«De hecho me ayudas más si me dices lo que NO funcionaría o lo que te
         parece complicado. Si todo te parece bonito, no aprendo nada. Sé brutal.»</blockquote>
         <ul>
@@ -281,6 +281,11 @@
         { q:'«¿Alguna de las tres se siente barata, o como que no le confiarías plata? ¿Cuál, y qué la hace sentir así?»',
           s:'<b>Premium invertido.</b> Sirve para descartar una dirección, no para coronar otra.' },
       ]},
+    { id:'bf', title:'Features — card sorting (cierre)', min:'7 min',
+      goal:'Atracción por feature: triaje + top 3 forzado + ancla al pasado',
+      note:'Después del color, el producto ya está revelado. No defiendas ninguna tarjeta: si una necesita venderse, eso ya es dato. El método y los resultados viven en la herramienta.',
+      tool:'features',
+      items:[] },
   ];
 
   /* ── estado ── */
@@ -334,6 +339,13 @@
         a.target = '_blank'; a.rel = 'noopener';
         a.href = `index.html?v=${PERSONAS[persona].mock}`;
         a.innerHTML = `${EXT} Abrir el mock (versión de ${PERSONAS[persona].label.split(' ·')[0]})`;
+        root.appendChild(a);
+      }
+      if (block.tool === 'features'){
+        const a = document.createElement('a');
+        a.className = 'mockbtn';
+        a.href = `tarjetas.html?p=${persona}`;
+        a.innerHTML = `${EXT} Abrir las tarjetas de features`;
         root.appendChild(a);
       }
 
