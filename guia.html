@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="theme-color" content="#1B1F1D" />
+<title>Guía de conversación</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  /* ─────────────────────────────────────────────────────────────
+     GUÍA DE ENTREVISTA — herramienta de campo (solo para el entrevistador)
+     Fuente de verdad del contenido: docs/research/2026-06-05-customer-interview-playbook.md
+     (bloques 0–3 + color). Esto es el formato de LECTURA EN VIVO, no el playbook:
+       · una entrevistada a la vez (chips) → filtra preguntas condicionales
+         y fija la variante ?v= del mock de color
+       · tap en el círculo = pregunta hecha (persiste en localStorage por persona)
+       · "señal" colapsada para no leerla en voz alta por accidente
+       · botón SOS = reencuadre anti-complacencia a un toque
+     Sin nombre de producto en pantalla a propósito: si la entrevistada
+     alcanza a ver el teléfono, no debe leer qué se está midiendo.
+     ───────────────────────────────────────────────────────────── */
+  :root{
+    --font:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    --paper:#F7F5F1; --surface:#FFFFFF; --ink:#22291F; --ink-2:#6B7265;
+    --line:#E5E1D8; --accent:#3D5A45; --accent-soft:#E8EEE9;
+    --star:#B3861E; --warn-bg:#FBF3E2; --warn-line:#EAD9AE;
+    --done:#9AA194;
+    --r:14px; --shadow:0 1px 2px rgba(25,30,22,.07),0 1px 1px rgba(25,30,22,.04);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0}
+  body{font-family:var(--font);background:var(--paper);color:var(--ink);
+    max-width:560px;margin:0 auto;padding-bottom:90px}
+
+  /* Header pegado: persona + cronómetro */
+  .top{position:sticky;top:0;z-index:20;background:rgba(247,245,241,.94);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+    padding:calc(env(safe-area-inset-top) + 10px) 14px 10px}
+  .top .row1{display:flex;align-items:center;gap:8px}
+  .top h1{font-size:15px;font-weight:700;margin:0;flex:1}
+  .timer{font-variant-numeric:tabular-nums;font-size:14px;font-weight:600;
+    border:1px solid var(--line);background:var(--surface);border-radius:999px;
+    padding:6px 12px;font-family:inherit;color:var(--ink);cursor:pointer}
+  .timer.running{border-color:var(--accent);color:var(--accent)}
+  .chips{display:flex;gap:6px;margin-top:10px}
+  .chips button{flex:1;font-family:inherit;font-size:12.5px;font-weight:600;
+    padding:8px 4px;border-radius:999px;border:1px solid var(--line);
+    background:var(--surface);color:var(--ink-2);cursor:pointer}
+  .chips button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+
+  main{padding:14px}
+
+  /* Notas / encuadres */
+  details.panel{background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--r);box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden}
+  details.panel summary{list-style:none;cursor:pointer;padding:13px 15px;
+    font-weight:600;font-size:14px;display:flex;align-items:center;gap:8px}
+  details.panel summary::-webkit-details-marker{display:none}
+  details.panel summary::after{content:"+";margin-left:auto;color:var(--ink-2);font-weight:500}
+  details.panel[open] summary::after{content:"–"}
+  details.panel .inner{padding:0 15px 14px;font-size:13.5px;line-height:1.5;color:var(--ink)}
+  blockquote{margin:10px 0;padding:10px 12px;background:var(--accent-soft);
+    border-radius:10px;font-size:13.5px;line-height:1.5}
+  .inner ul{margin:8px 0;padding-left:18px}
+  .inner li{margin-bottom:6px}
+
+  /* Bloques */
+  .block{margin:22px 0 10px;display:flex;align-items:baseline;gap:8px}
+  .block h2{font-size:16px;margin:0;flex:1}
+  .block .min{font-size:12px;font-weight:600;color:var(--ink-2);
+    background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 9px;white-space:nowrap}
+  .block-goal{font-size:12.5px;color:var(--ink-2);margin:-4px 0 10px}
+
+  .note{background:var(--warn-bg);border:1px solid var(--warn-line);border-radius:var(--r);
+    padding:11px 13px;font-size:13px;line-height:1.5;margin-bottom:10px}
+  .note b{color:#7A5B10}
+
+  /* Pregunta */
+  .q{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+    box-shadow:var(--shadow);margin-bottom:10px;padding:12px 13px;display:flex;gap:11px}
+  .q.done{opacity:.55}
+  .q .check{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);
+    background:var(--surface);flex:none;margin-top:1px;cursor:pointer;display:grid;place-items:center;padding:0}
+  .q.done .check{background:var(--accent);border-color:var(--accent)}
+  .q .check svg{width:14px;height:14px;color:#fff;display:none}
+  .q.done .check svg{display:block}
+  .q .body{flex:1;min-width:0}
+  .q .text{font-size:15px;line-height:1.45;font-weight:500}
+  .q .alt{font-size:13px;line-height:1.45;color:var(--ink-2);margin-top:6px;font-style:italic}
+  .q .tags{display:flex;gap:5px;margin-bottom:5px;flex-wrap:wrap}
+  .tag{font-size:10.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;
+    border-radius:5px;padding:2px 6px;background:var(--accent-soft);color:var(--accent)}
+  .tag.star{background:#F6ECD2;color:var(--star)}
+  .q details{margin-top:8px}
+  .q summary{list-style:none;cursor:pointer;font-size:12px;font-weight:600;color:var(--ink-2);
+    display:inline-flex;align-items:center;gap:4px}
+  .q summary::-webkit-details-marker{display:none}
+  .q summary::before{content:"▸";font-size:10px;transition:transform .15s}
+  .q details[open] summary::before{transform:rotate(90deg)}
+  .q .signal{font-size:13px;line-height:1.5;color:var(--ink-2);margin-top:6px;
+    border-left:3px solid var(--accent-soft);padding-left:10px}
+  .q .signal b{color:var(--ink)}
+
+  /* Bloque de color */
+  .mockbtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+    background:var(--accent);color:#fff;border:none;border-radius:var(--r);
+    font-family:inherit;font-size:15px;font-weight:600;padding:15px;cursor:pointer;
+    text-decoration:none;margin:4px 0 10px;box-shadow:var(--shadow)}
+  .mockbtn svg{width:18px;height:18px}
+
+  /* SOS */
+  .sos{position:fixed;right:14px;bottom:calc(env(safe-area-inset-bottom) + 14px);z-index:30;
+    width:54px;height:54px;border-radius:50%;border:none;background:#A33B2E;color:#fff;
+    font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;
+    box-shadow:0 6px 18px rgba(120,30,20,.35)}
+  dialog{border:none;border-radius:18px;max-width:480px;width:calc(100% - 40px);
+    padding:20px;font-family:var(--font);color:var(--ink)}
+  dialog::backdrop{background:rgba(15,18,14,.55)}
+  dialog h3{margin:0 0 4px;font-size:15px}
+  dialog .ctx{font-size:12.5px;color:var(--ink-2);margin-bottom:8px}
+  dialog blockquote{margin:0 0 16px}
+  dialog form{text-align:right}
+  dialog button{font-family:inherit;font-weight:600;font-size:13.5px;border:none;
+    background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:9px 18px;cursor:pointer}
+
+  .reset{display:block;margin:26px auto 0;font-family:inherit;font-size:12.5px;
+    color:var(--ink-2);background:none;border:none;text-decoration:underline;cursor:pointer}
+</style>
+</head>
+<body>
+  <header class="top">
+    <div class="row1">
+      <h1>Guía de conversación</h1>
+      <button class="timer" id="timer" title="Tocar para iniciar/pausar">00:00</button>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Entrevistada"></div>
+  </header>
+
+  <main>
+    <details class="panel">
+      <summary>Antes de empezar — apertura y reglas</summary>
+      <div class="inner">
+        <blockquote>«Estoy trabajando en algo para emprendedores que venden por WhatsApp y
+        necesito entender bien cómo es ese día a día de verdad, no en teoría. No te voy a
+        mostrar nada ni a pedirte que opines sobre ninguna idea — al revés, necesito que me
+        cuentes cómo haces TÚ las cosas hoy, con ejemplos reales. Mientras más crudo y
+        honesto, más me sirve. ¿Te puedo robar 40 minutos?»</blockquote>
+        <blockquote>«De hecho me ayudas más si me dices lo que NO funcionaría o lo que te
+        parece complicado. Si todo te parece bonito, no aprendo nada. Sé brutal.»</blockquote>
+        <ul>
+          <li><b>Pasado, no futuro.</b> Nunca «¿usarías…?». Siempre «¿cuándo fue la última vez…?».</li>
+          <li><b>Calla 3 segundos</b> cuando termine de hablar. El oro sale en el silencio.</li>
+          <li><b>Persigue lo concreto.</b> «A veces pierdo ventas» no se acepta — «cuéntame la última vez exacta».</li>
+          <li><b>Valencia simétrica.</b> Toda pregunta debe poder responderse «no me preocupa» sin sonar a evasión.</li>
+          <li><b>Grabar con permiso:</b> «¿te molesta si grabo? es para no estar escribiendo y prestarte atención».</li>
+          <li>Anota solo dos columnas: <b>citas literales</b> y <b>señales espontáneas ★</b> (lo que dijo sin que preguntaras vale 10x).</li>
+        </ul>
+      </div>
+    </details>
+
+    <div id="guide"><!-- render dinámico --></div>
+
+    <button class="reset" id="reset">Reiniciar marcas y cronómetro de esta entrevista</button>
+  </main>
+
+  <button class="sos" id="sosBtn" aria-label="Frase de rescate">SOS</button>
+  <dialog id="sos">
+    <h3>Si empieza a complacerte</h3>
+    <div class="ctx">Cuando diga algo como «ay, suena buenísimo lo que haces»:</div>
+    <blockquote>«Para, eso no me sirve todavía — no te estoy vendiendo nada. Cuéntame mejor
+    qué pasó la última vez que perdiste una venta o un cliente te escribió tarde. Los hechos
+    me sirven más que el ánimo.»</blockquote>
+    <h3>Si la respuesta es vaga</h3>
+    <div class="ctx">«A veces», «por lo general», «yo creo que»…</div>
+    <blockquote>«Cuéntame de la última vez exacta que pasó. ¿Qué hiciste tú, paso a paso?»</blockquote>
+    <form method="dialog"><button>Volver</button></form>
+  </dialog>
+
+<script>
+  const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>';
+  const EXT   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4L10 14"/><path d="M18 13v6a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 19V8a1.5 1.5 0 0 1 1.5-1.5H11"/></svg>';
+
+  const PERSONAS = {
+    shadia:  { label:'Shadia · Shalú',        mock:'shalu' },
+    juanita: { label:'Juanita · Olumi/Billi', mock:'olumi' },
+    dani:    { label:'Dani · EKA',            mock:'eka'   },
+  };
+
+  // only: la pregunta aparece solo para esas personas. disc: viene del discovery 06-11.
+  const BLOCKS = [
+    { id:'b0', title:'Bloque 0 — Clasificar el negocio', min:'4 min',
+      goal:'Persona A o B + canal donde nacen los leads',
+      items:[
+        { q:'«Cuéntame de tu marca en una frase: ¿qué vendes y a quién?»',
+          s:'Establece el rubro. Punto de partida.' },
+        { q:'«Cuando un cliente te escribe, ¿lo más común es que pregunte por un precio, talla o disponibilidad de algo concreto, o que necesite que le armes una cotización o agendar algo?»',
+          s:'<b>Clasifica A vs B.</b> A (productos): precios/catálogo/pedido. B (servicios): calificar/cotizar/agendar. Define el lenguaje del Kanban y la plantilla por vertical.' },
+        { disc:true,
+          q:'«Muéstrame: ¿dónde te escriben más, el DM de Instagram o WhatsApp? Cuando te escriben por DM, ¿qué haces — respondes ahí o los pasas a WhatsApp?»',
+          s:'<b>Canal (D1).</b> ¿El DM es donde <b>nace</b> la venta y WhatsApp donde se <b>cierra</b>? Pide ver el teléfono: el reparto real, no el recordado.' },
+        { only:['juanita'],
+          q:'«¿Las dos marcas funcionan igual cuando un cliente escribe, o son distintas?»',
+          s:'Detecta A y B a la vez — caso multimarca/multinúmero. Billi (personalizado) puede comportarse distinto de Olumi.' },
+      ]},
+    { id:'b1', title:'Bloque 1 — Vida real y dolor', min:'13 min',
+      goal:'H1 espontánea, H7, JTBD + soledad',
+      note:'No preguntes por la IA todavía. Si dice «prefiero responder yo para que no quede raro» <b>sin que menciones automatización</b> → ★ H1 espontánea, anótala literal.',
+      items:[
+        { q:'«Muéstrame en tu teléfono, ahora mismo, cómo atiendes a un cliente nuevo que te escribe. Hazlo como lo haces de verdad.»',
+          s:'<b>H7 (mobile real).</b> No preguntes, <b>observa</b>: ¿todo en el celular?, ¿entre otras cosas?, ¿qué la frena?' },
+        { q:'«Cuéntame de la última vez que perdiste una venta por no contestar a tiempo. ¿Qué pasó exactamente?»',
+          s:'Dolor central e intensidad. Si no recuerda ninguna o no le duele → bandera: puede que el problema no sea agudo para ella.' },
+        { q:'«¿Qué es lo más tedioso o repetitivo de responder por WhatsApp? Dame el último ejemplo.»',
+          s:'JTBD funcional + emocional. Prioriza qué automatizar primero.' },
+        { q:'«Cuando estás ocupada o dormida y entran mensajes, ¿qué haces? ¿Qué pasó la última vez?»',
+          s:'El «aha» potencial (atender 24/7). Mide cuánto le pesa de verdad.' },
+        { disc:true,
+          q:'«¿Qué fue lo último que dejaste de hacer en el negocio por falta de manos o de tiempo?»',
+          s:'<b>Soledad («todo me toca a mí»).</b> Si «estoy sola en esto» aparece espontánea → ★. Lo que dejó de hacer revela qué «empleado» le falta primero (¿publicar?, ¿seguimiento?, ¿responder?).' },
+      ]},
+    { id:'b1b', title:'Bloque 1B — Cobro, producción y agenda', min:'5 min',
+      goal:'F12/F13, Persona C, calendario',
+      note:'Sigue siendo «muéstrame cómo trabajas hoy»: cero mención de producto.',
+      items:[
+        { disc:true,
+          q:'«Cuando alguien te compra, ¿cómo confirmas que te pagó? Muéstrame el último comprobante que te mandaron.»',
+          s:'<b>F12 (pago por comprobante).</b> ¿Pantallazo por WhatsApp? ¿Revisa la app del banco uno a uno? ¿Cuánto demora? La fricción observada ES la feature.' },
+        { disc:true,
+          q:'«¿Alguna vez te llegó un comprobante editado o falso, o conoces a alguien a quien le pasó?»',
+          s:'El miedo que justifica «pago reportado ≠ confirmado». Caso real = valida confirmación humana + detección de inconsistencias.' },
+        { disc:true,
+          q:'«¿Ya cobras con llave Bre-B? ¿Cómo te ha ido? ¿Tus clientes la usan o te siguen mandando transferencia normal?»',
+          s:'<b>F13 (Bre-B).</b> Madurez del riel en el segmento real. Si nadie la usa aún, F13 baja de urgencia frente a F12.' },
+        { disc:true, only:['juanita','shadia'],
+          q:'«Después de que te confirman el pago, ¿cómo llevas el control de los pedidos que están en producción? Muéstrame dónde lo anotas.»',
+          s:'<b>Persona C (fabricante).</b> El cuaderno / notas / estados ES el spec del tablero de producción. Remate: «¿se te ha pasado la fecha de un pedido? ¿qué pasó?»' },
+        { disc:true, only:['dani'],
+          q:'«¿Cómo agendas las clases o citas? Muéstrame tu agenda. ¿Se te ha cruzado o pasado alguna?»',
+          s:'<b>Calendario (Fase 2).</b> ¿Google Calendar, cuaderno, memoria? Un cruce u olvido real con su historia = el dolor que paga la integración.' },
+      ]},
+    { id:'b2', title:'Bloque 2 — Confianza, herramientas y la IA', min:'11 min',
+      goal:'H1 (test simétrico), H2, H4, H5 + marketing',
+      note:'Solo aquí introduces respuestas automáticas — y por <b>su experiencia pasada</b>, no por tu producto.',
+      items:[
+        { q:'«¿Alguna vez usaste respuestas automáticas, un chatbot, o el WhatsApp Business con mensajes guardados? ¿Qué pasó? ¿Por qué lo dejaste o lo sigues usando?»',
+          s:'Origen del escepticismo; qué rompió la confianza antes. Base de <b>H2/H5</b>.' },
+        { q:'«¿Alguna vez dejaste que una herramienta respondiera o hiciera algo sola en tu negocio — un mensaje automático, un cobro, un envío programado? Cuéntame qué pasó y cómo te sentiste.»',
+          alt:'Sin experiencia previa: «Si una herramienta empezara a responderles a tus clientes por ti, ¿qué crees que cambiaría — para bien y para mal?» Persigue: «¿Y eso te pasó de verdad alguna vez? Cuéntame la última.»',
+          s:'<b>H1 — test simétrico.</b> <b>Confirma:</b> pérdida de control / «queda mal yo» / «suena robot», con emoción o caso real. <b>Tumba:</b> alivio / «me daría igual» — vale tanto como confirmar. Si el miedo ya salió en Bloque 1 sin nombrar automatización → ★ espontánea (10x); si sale solo aquí → inducida, no cuenta para el umbral ≥2/3.' },
+        { q:'«¿Te ha pasado que un cliente note que le respondió algo automático, o una plantilla? ¿Cómo reaccionó?»',
+          s:'Miedo social/reputacional (H1, capa social). Hecho real, no hipótesis.' },
+        { q:'«Cuando usas una herramienta que hace algo por ti — un pago automático, un posteo programado —, ¿la dejas correr sola o revisas antes de que salga? Dame el último ejemplo.»',
+          s:'<b>H2 (copiloto vs autónomo).</b> Si revisa antes → copiloto/aprobación por defecto. Si deja correr → tolera autonomía. Comportamiento, no preferencia declarada.' },
+        { q:'«La última vez que empezaste a usar una herramienta nueva para tu negocio, ¿qué hizo que la siguieras usando o la abandonaras?»',
+          s:'<b>H4 (parálisis de configuración).</b> Patrón real de adopción/abandono.' },
+        { disc:true,
+          q:'«¿Quién hace tus publicaciones de Instagram? ¿Cuánto tiempo te toma a la semana? ¿Qué es lo que más pereza te da de eso?»',
+          s:'Apetito del «empleado de marketing» (Fase 3). Horas/semana reales + si lo delegó o pagó = techo de valor. Si el tedio de publicar salió espontáneo en la pregunta de soledad, conecta los puntos.' },
+      ]},
+    { id:'b3', title:'Bloque 3 — Dinero', min:'3 min',
+      goal:'Disposición a pagar anclada en comportamiento',
+      note:'<b>No preguntes cuánto pagaría</b> — esa respuesta no vale nada. El precio se valida con un cobro real a beta-testers.',
+      items:[
+        { q:'«¿Qué herramientas o apps pagas hoy para tu negocio, y cuánto? ¿Por qué esas sí valen la plata?»',
+          s:'Ancla la disposición a pagar en comportamiento real: umbral y qué justifica pago para ella.' },
+        { q:'«De todo lo que me contaste que es tedioso o que te hace perder ventas, ¿qué tanto te dolería que siguiera pasando un año más?»',
+          s:'Intensidad del dolor = techo de valor.' },
+      ]},
+    { id:'bc', title:'Color — al final, con el mock', min:'3 min',
+      goal:'Asociación y percepción, nunca gusto',
+      note:'Muestra el mock y cambia entre versiones con los botones <b>1 · 2 · 3</b>. Pregunta prohibida: «¿cuál te gusta?». El color solo se lee <b>en contraste</b>. Mientras habla, anota la <b>primera reacción de la cara</b>, cuál mira primero y dónde se queda — el cuerpo miente menos que la boca.',
+      mock:true,
+      items:[
+        { q:'«Aquí está la misma conversación en tres versiones; lo único que cambia es el color. Mírala unos segundos. ¿Cuál se siente mejor para tu negocio y cuál peor? Sin pensarlo mucho.»',
+          s:'Primer contraste, valencia simétrica: fuerza un mejor Y un peor. Calentamiento para los «por qué», no el dato final.' },
+        { q:'«De estas tres, ¿a cuál le entregarías los mensajes de TUS clientes sin estar revisando por encima del hombro? ¿Por qué esa, y por qué no las otras?»',
+          s:'<b>Confianza percibida</b> (liga con H1). El «por qué esa y no las otras» es el dato, no el «cuál».' },
+        { q:'«¿Alguna de las tres se siente barata, o como que no le confiarías plata? ¿Cuál, y qué la hace sentir así?»',
+          s:'<b>Premium invertido.</b> Sirve para descartar una dirección, no para coronar otra.' },
+      ]},
+  ];
+
+  /* ── estado ── */
+  const params  = new URLSearchParams(location.search);
+  let persona = params.get('p');
+  if (!PERSONAS[persona]) persona = localStorage.getItem('guide:persona') || 'shadia';
+
+  const doneKey = (qid) => `guide:${persona}:${qid}`;
+
+  /* ── chips de persona ── */
+  const chips = document.getElementById('chips');
+  Object.entries(PERSONAS).forEach(([key, p]) => {
+    const b = document.createElement('button');
+    b.textContent = p.label;
+    b.dataset.key = key;
+    chips.appendChild(b);
+    b.addEventListener('click', () => { persona = key; saveAndRender(); });
+  });
+
+  function saveAndRender(){
+    localStorage.setItem('guide:persona', persona);
+    history.replaceState(null, '', `?p=${persona}`);
+    chips.querySelectorAll('button').forEach(b =>
+      b.setAttribute('aria-pressed', String(b.dataset.key === persona)));
+    render();
+  }
+
+  /* ── render de la guía ── */
+  function render(){
+    const root = document.getElementById('guide');
+    root.innerHTML = '';
+    BLOCKS.forEach(block => {
+      const head = document.createElement('div');
+      head.className = 'block';
+      head.innerHTML = `<h2>${block.title}</h2><span class="min">${block.min}</span>`;
+      root.appendChild(head);
+      const goal = document.createElement('div');
+      goal.className = 'block-goal';
+      goal.textContent = block.goal;
+      root.appendChild(goal);
+
+      if (block.note){
+        const n = document.createElement('div');
+        n.className = 'note';
+        n.innerHTML = block.note;
+        root.appendChild(n);
+      }
+      if (block.mock){
+        const a = document.createElement('a');
+        a.className = 'mockbtn';
+        a.target = '_blank'; a.rel = 'noopener';
+        a.href = `index.html?v=${PERSONAS[persona].mock}`;
+        a.innerHTML = `${EXT} Abrir el mock (versión de ${PERSONAS[persona].label.split(' ·')[0]})`;
+        root.appendChild(a);
+      }
+
+      block.items.forEach((item, i) => {
+        if (item.only && !item.only.includes(persona)) return;
+        const qid = `${block.id}-${i}`;
+        const card = document.createElement('div');
+        card.className = 'q' + (localStorage.getItem(doneKey(qid)) ? ' done' : '');
+        card.innerHTML = `
+          <button class="check" aria-label="marcar pregunta hecha">${CHECK}</button>
+          <div class="body">
+            ${item.disc ? '<div class="tags"><span class="tag">discovery</span></div>' : ''}
+            <div class="text">${item.q}</div>
+            ${item.alt ? `<div class="alt">${item.alt}</div>` : ''}
+            <details><summary>señal</summary><div class="signal">${item.s}</div></details>
+          </div>`;
+        card.querySelector('.check').addEventListener('click', () => {
+          card.classList.toggle('done');
+          if (card.classList.contains('done')) localStorage.setItem(doneKey(qid), '1');
+          else localStorage.removeItem(doneKey(qid));
+        });
+        root.appendChild(card);
+      });
+    });
+  }
+  saveAndRender();
+
+  /* ── cronómetro (38 min de presupuesto; solo informativo) ── */
+  let t0 = null, acc = 0, tick = null;
+  const timerBtn = document.getElementById('timer');
+  function show(){
+    const s = Math.floor((acc + (t0 ? Date.now() - t0 : 0)) / 1000);
+    timerBtn.textContent = `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+  }
+  timerBtn.addEventListener('click', () => {
+    if (t0){ acc += Date.now() - t0; t0 = null; clearInterval(tick); timerBtn.classList.remove('running'); }
+    else { t0 = Date.now(); tick = setInterval(show, 1000); timerBtn.classList.add('running'); }
+    show();
+  });
+
+  /* ── reset por persona ── */
+  document.getElementById('reset').addEventListener('click', () => {
+    BLOCKS.forEach(b => b.items.forEach((_, i) => localStorage.removeItem(doneKey(`${b.id}-${i}`))));
+    acc = 0; t0 = null; clearInterval(tick); timerBtn.classList.remove('running'); show();
+    render();
+  });
+
+  /* ── SOS ── */
+  const sos = document.getElementById('sos');
+  document.getElementById('sosBtn').addEventListener('click', () => sos.showModal());
+</script>
+</body>
+</html>
