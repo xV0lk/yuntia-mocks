@@ -20,9 +20,12 @@
        2) top-3 forzado ("si solo pudieras tener tres") = trade-off real
        3) ancla al pasado por cada top ("¿cuándo fue la última vez que
           te hizo falta?") — sin caso real reciente, la atracción es humo
-     Orden de tarjetas barajado por persona (sesgo de orden) y fijado en
-     localStorage para poder retomar. Los códigos F# solo aparecen en los
-     resultados (síntesis), nunca durante el sorteo.
+       4) cierre de naming (06-15): asociación proyectiva nombre↔producto
+          DESPUÉS de revelar features — 4 finalistas + 1 mock de control,
+          escape neutro "Ninguno", y "¿por qué ese?" como dato real
+     Orden de tarjetas (y de nombres) barajado por persona (sesgo de orden) y
+     fijado en localStorage para poder retomar. Los códigos F# solo aparecen en
+     los resultados (síntesis), nunca durante el sorteo.
      ───────────────────────────────────────────────────────────── */
   :root{
     --font:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
@@ -144,6 +147,10 @@
             <b>«¿cuándo fue la última vez que te hizo falta? ¿qué pasó?»</b> Sin caso real
             reciente, la atracción es humo.</li>
           <li>Por cada «no lo usaría»: <b>«¿por qué no?»</b> — oro para recortar alcance.</li>
+          <li><b>Cierre — el nombre:</b> tras el top, una sola pantalla pide asociar
+            un nombre al producto que acaba de ver (5 opciones, una es de control).
+            Elección por instinto; vale más el <b>«¿por qué ese?»</b> que el voto. Si
+            no le cuadra ninguno, «Ninguno» es respuesta válida — no la empujes.</li>
         </ul>
       </div>
     </details>
@@ -206,6 +213,29 @@
   };
   const BUCKETS = { ya:'Lo necesito ya', bien:'Estaría bien', no:'No lo usaría' };
 
+  // Cierre de naming (06-15): asociación proyectiva nombre↔producto, preguntada
+  // DESPUÉS de revelar los features (la persona ya sabe qué hace). 4 finalistas
+  // (research 2026-06-15) + 1 mock de control para detectar voto al azar y dar
+  // línea base; el flag .mock solo se ve en resultados, nunca en el sorteo.
+  // Para cambiar el mock: edita la única entrada con mock:true.
+  // Orden barajado por persona (sesgo de orden), igual que las tarjetas.
+  const NAMES = [
+    { id:'yuntia',  t:'Yuntia' },
+    { id:'bilumi',  t:'Bilumi' },
+    { id:'diuna',   t:'Diuna' },
+    { id:'mompora', t:'Mompora' },
+    { id:'velora',  t:'Velora', mock:true },   // ← control / decoy (intercambiable)
+  ];
+  const nameById = Object.fromEntries(NAMES.map(n => [n.id, n]));
+  const shuffledNames = () => {
+    const nm = NAMES.map(n => n.id);
+    for (let i = nm.length - 1; i > 0; i--) {        // Fisher–Yates
+      const j = Math.floor(Math.random() * (i + 1));
+      [nm[i], nm[j]] = [nm[j], nm[i]];
+    }
+    return nm;
+  };
+
   const params = new URLSearchParams(location.search);
   let persona = params.get('p');
   if (!PERSONAS[persona]) persona = localStorage.getItem('guide:persona') || 'shadia';
@@ -220,11 +250,18 @@
       const j = Math.floor(Math.random() * (i + 1));
       [ids[i], ids[j]] = [ids[j], ids[i]];
     }
-    return { order: ids, idx: 0, buckets: {}, top: [], phase: 'intro' };
+    return { order: ids, idx: 0, buckets: {}, top: [],
+             nameOrder: shuffledNames(), namePick: null, phase: 'intro' };
   }
   function load(){
-    try { const s = JSON.parse(localStorage.getItem(storeKey())); if (s && s.order) return s; }
-    catch(e){}
+    try {
+      const s = JSON.parse(localStorage.getItem(storeKey()));
+      if (s && s.order) {
+        if (!s.nameOrder) s.nameOrder = shuffledNames();   // backfill entrevistas previas
+        if (s.namePick === undefined) s.namePick = null;
+        return s;
+      }
+    } catch(e){}
     return freshState();
   }
   function save(){ localStorage.setItem(storeKey(), JSON.stringify(st)); }
@@ -255,6 +292,7 @@
     if (st.phase === 'intro') renderIntro();
     else if (st.phase === 'triage') renderTriage();
     else if (st.phase === 'top') renderTop();
+    else if (st.phase === 'name') renderName();
     else renderResults();
   }
 
@@ -342,6 +380,38 @@
     });
     const go = document.getElementById('go');
     go.disabled = st.top.length !== need;
+    go.addEventListener('click', () => { st.phase = 'name'; save(); render(); });
+  }
+
+  // Pantalla de cierre: asociación nombre↔producto. Selección única entre los 5
+  // (barajados) + escape neutro "Ninguno" — misma valencia simétrica que el balde
+  // "no lo usaría": no forzamos señal. El "¿por qué?" se pregunta en resultados.
+  function renderName(){
+    count.textContent = '';
+    stage.innerHTML = `
+      <div class="note"><b>Última — el nombre.</b> Léelo tal cual: «Para cerrar:
+      estamos por ponerle nombre a todo esto que te mostré. De estos, ¿cuál
+      sientes que <b>va más</b> con lo que hace? Elige por instinto — no hay
+      correcto, y si ninguno te cuadra, dímelo.»</div>
+      <div id="names"></div>
+      <button class="cta" id="goname" disabled>Guardar y ver resultado</button>`;
+    const wrap = document.getElementById('names');
+    const choose = id => { st.namePick = (st.namePick === id) ? null : id; save(); renderName(); };
+    st.nameOrder.forEach(id => {
+      const n = nameById[id];
+      const div = document.createElement('div');
+      div.className = 'pick' + (st.namePick === id ? ' sel' : '');
+      div.innerHTML = `<div class="mark">✓</div><div class="t"><b>${n.t}</b></div>`;
+      div.addEventListener('click', () => choose(id));
+      wrap.appendChild(div);
+    });
+    const none = document.createElement('div');
+    none.className = 'pick' + (st.namePick === '__none__' ? ' sel' : '');
+    none.innerHTML = `<div class="mark">✓</div><div class="t"><b style="color:var(--ink-2)">Ninguno me cuadra</b></div>`;
+    none.addEventListener('click', () => choose('__none__'));
+    wrap.appendChild(none);
+    const go = document.getElementById('goname');
+    go.disabled = !st.namePick;
     go.addEventListener('click', () => { st.phase = 'done'; save(); render(); });
   }
 
@@ -363,6 +433,17 @@
         html += `<div class="res neg"><span class="code">${f.id}</span><b>${f.t}</b></div>`;
       });
     }
+    if (st.namePick){
+      html += '<h3 class="sec">Nombre asociado — pregunta «¿por qué ese?»</h3>';
+      if (st.namePick === '__none__'){
+        html += `<div class="res neg"><b>Ninguno le cuadró</b>
+          <div class="ask">«¿Qué nombre le pondrías tú, o qué le falta a estos?» — la respuesta abierta es el dato.</div></div>`;
+      } else {
+        const n = nameById[st.namePick];
+        html += `<div class="res"><b>${n.t}</b>${n.mock ? ' <span class="code" style="color:var(--ink-2);background:#EEEBE4">control</span>' : ''}
+          <div class="ask">«¿Por qué sentiste que ese va más con lo que te mostré?» — anota literal; la razón vale más que el voto.${n.mock ? '<br/><b style="color:#7A5B10">Ojo:</b> eligió el nombre de control (decoy) — leer su porqué con cuidado, puede ser voto al azar.' : ''}</div></div>`;
+      }
+    }
     const rest = b => {
       const ids = list(b);
       if (!ids.length) return '';
@@ -376,12 +457,16 @@
 
     document.getElementById('copy').addEventListener('click', async (e) => {
       const line = ids => ids.map(id => `${id} ${byId[id].t}`).join(' · ') || '—';
+      const nameLine = !st.namePick ? '—'
+        : st.namePick === '__none__' ? 'Ninguno le cuadró'
+        : nameById[st.namePick].t + (nameById[st.namePick].mock ? ' (control/decoy)' : '');
       const txt = [
         `Card sorting de features — ${PERSONAS[persona].label}`,
         `TOP ${st.top.length}: ${line(st.top)}`,
         `Lo necesito ya: ${line(st.order.filter(id => st.buckets[id]==='ya' && !st.top.includes(id)))}`,
         `Estaría bien: ${line(st.order.filter(id => st.buckets[id]==='bien' && !st.top.includes(id)))}`,
         `No lo usaría: ${line(noes)}`,
+        `Nombre asociado: ${nameLine}`,
       ].join('\n');
       try { await navigator.clipboard.writeText(txt); e.target.textContent = 'Copiado ✓'; }
       catch(err){ prompt('Copia manual:', txt); }
