@@ -140,6 +140,42 @@
   </header>
 
   <main>
+    <details class="panel" id="coldopen" open>
+      <summary>Apertura — sondeo de sonido (va PRIMERO, ~2 min)</summary>
+      <div class="inner">
+        <div class="note" style="margin-bottom:10px">Esto va <b>antes</b> del «¿te puedo
+        robar 45 minutos?». Es un favor de un minuto, <b>amurallado</b> del resto: así la
+        reacción al nombre llega <b>sin que sepa qué hace el producto</b>. Un solo nombre por
+        persona (entre-sujetos, para no contaminar comparando) — esta entrevistada:
+        <b><span id="coldName">Yuntia</span></b>. Mapa: Shadia → Yuntia · Dani → Diuna.
+        <b>Nunca lo escribas ni lo muestres</b>; solo se dice en voz alta.</div>
+        <blockquote>«Antes de lo tuyo, ¿me ayudas con un mini-favor de un minuto, aparte de
+        todo? Te digo una palabra y solo quiero tu primera reacción.»</blockquote>
+        <ol style="padding-left:18px;margin:0;font-size:13.5px;line-height:1.5">
+          <li style="margin-bottom:10px"><b>Reacción libre</b> (primero, sin que escriba
+            nada). Dilo una vez, claro y natural: «<b><span class="coldNameRef">Yuntia</span></b>».
+            Luego: «Sin pensarlo, ¿a qué te suena? ¿qué te imaginas que hace una empresa que
+            se llama así?»<br/>
+            <span style="color:var(--ink-2)">Señal: ¿aparece la raíz <b>sin inducir</b>?
+            (Yuntia → «socio/compañero/juntos»; Diuna → «tabaco/ancestral/naturaleza»).
+            Predicción registrada: <b>no aparece sola</b> → la raíz es marca latente (activo
+            diferido), no reconocimiento en el punto de venta. Anota literal. <b>No es</b> el
+            test de asociación del cierre — no los colapses al leer.</span></li>
+          <li style="margin-bottom:10px"><b>Dictado</b> (después de la reacción). «Hazme un
+            favor: escríbelo como creas que se escribe, como lo oíste.» Que lo escriba en
+            <b>su</b> teléfono o papel; tú no se lo muestras.<br/>
+            <span style="color:var(--ink-2)">Señal: exacto letra por letra = pasa. Anota la
+            errata <b>tal cual</b> — dice <b>dónde</b> se rompe, no solo que se rompió (Diuna:
+            ojo «duna/diona»). Este dato <b>no se promedia</b> con el test de voz de los 5
+            (otra muestra, en persona): se lee aparte.</span></li>
+          <li><b>(Opcional) Confianza ciega.</b> «Sin saber aún qué hace: del 1 al 5, ¿cuánta
+            confianza te daría para entregarle tus ventas? ¿Por qué?»</li>
+        </ol>
+        <blockquote style="margin-top:12px">«Listo, gracias — eso era todo de eso. Ahora sí,
+        lo de verdad…» → sigue con «Antes de empezar».</blockquote>
+      </div>
+    </details>
+
     <details class="panel">
       <summary>Antes de empezar — apertura y reglas</summary>
       <div class="inner">
@@ -183,10 +219,14 @@
   const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>';
   const EXT   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4L10 14"/><path d="M18 13v6a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 19V8a1.5 1.5 0 0 1 1.5-1.5H11"/></svg>';
 
+  // naming: nombre que se sondea en la APERTURA (reacción libre + dictado), uno
+  // por persona y entre-sujetos — así cada cierre de tarjetas tiene un solo nombre
+  // pre-familiar (mere-exposure) y los dos finalistas con raíz (yunta/diona) se
+  // comparan ENTRE personas, no dentro de una. Bilumi/Mompora: test de voz de los 5.
   const PERSONAS = {
-    shadia:  { label:'Shadia · Shalú',        mock:'shalu' },
-    juanita: { label:'Juanita · Olumi/Billi', mock:'olumi' },
-    dani:    { label:'Dani · EKA',            mock:'eka'   },
+    shadia:  { label:'Shadia · Shalú',        mock:'shalu', naming:'Yuntia' },
+    juanita: { label:'Juanita · Olumi/Billi', mock:'olumi', naming:'Yuntia' },
+    dani:    { label:'Dani · EKA',            mock:'eka',   naming:'Diuna'  },
   };
 
   // only: la pregunta aparece solo para esas personas. disc: viene del discovery 06-11.
@@ -305,11 +345,19 @@
     b.addEventListener('click', () => { persona = key; saveAndRender(); });
   });
 
+  function fillColdOpen(){
+    const nm = PERSONAS[persona].naming;
+    const el = document.getElementById('coldName');
+    if (el) el.textContent = nm;
+    document.querySelectorAll('.coldNameRef').forEach(s => { s.textContent = nm; });
+  }
+
   function saveAndRender(){
     localStorage.setItem('guide:persona', persona);
     history.replaceState(null, '', `?p=${persona}`);
     chips.querySelectorAll('button').forEach(b =>
       b.setAttribute('aria-pressed', String(b.dataset.key === persona)));
+    fillColdOpen();
     render();
   }
 
